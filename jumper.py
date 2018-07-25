@@ -190,6 +190,7 @@ def main():
             ammo_hit = pygame.sprite.spritecollide(player, ammo_group, True)
             if ammo_hit:
                 bullet_count += 12
+                gen_ammo = False
 
         if bullet_hit:
             score += 1
