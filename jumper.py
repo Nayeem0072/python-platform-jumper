@@ -21,6 +21,7 @@ platform_size = [600, 30]
 block_speed = 2.5
 jump_height = 80
 
+
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, size, color):
         pygame.sprite.Sprite.__init__(self)
@@ -39,6 +40,11 @@ def draw_obstacle():
     obs.vx = block_speed
     return obs
 
+def draw_ammo():
+    ammo = Sprite([500, platform_pos[1]-20], [10, 10], BLUE)
+    ammo.vx = block_speed
+    return ammo
+
 def dec_dead(screen, score):
     myfont = pygame.font.SysFont('Verdena', 40)
     text = myfont.render('U Ded!!', False, RED)
@@ -50,7 +56,7 @@ def draw_score(screen, score, bullet_count):
     myfont = pygame.font.SysFont('Verdena', 20)
     top = (480, 20)
     scoretext = myfont.render('Score: ' + str(score), False, BLACK)
-    bullettext = myfont.render('Bullets: ' + str(bullet_count) + ' / 12', False, BLUE)
+    bullettext = myfont.render('Bullets: ' + str(bullet_count), False, BLUE)
     screen.blit(scoretext, top)
     screen.blit(bullettext, [top[0], top[1] + 20])
 
@@ -89,6 +95,13 @@ def check_block_past(wall_group, score, block_past):
             block_past = True
     return [score, block_past]
 
+def check_ammo_past(ammo_group):
+    for ammo in ammo_group:
+        ammo.rect.x += ammo.vx * -1
+        if ammo.rect.x < 0:            
+            ammo.kill()
+    return ammo_group
+
 
 def main():
     pygame.init()
@@ -124,7 +137,15 @@ def main():
     bullet_group = pygame.sprite.Group()
     is_dead = False
     
+    ammo_group = pygame.sprite.Group()
+        
+    ammo_gen_time = 0
+    gen_ammo = False
+    ammo_gen_time_interval = 600
+
     while True:        
+        ammo_gen_time += 1
+        ammo_group = check_ammo_past(ammo_group)
         block_check = check_block_past(wall_group, score, block_past)
         score = block_check[0]
         block_past = block_check[1]
@@ -146,14 +167,14 @@ def main():
         
         if key[player.move[2]]:
             player = jump_player_up(player)
-            print("jump occuring")
+            # print("jump occuring")
 
         if key[player.move[3]]:
             if bullet_count > 0:
                 bullet = Sprite([player.rect.x + 30, player.rect.y + 15], [5, 5], BLACK)
                 bullet_group.add(bullet)
                 bullet_count += -1
-                print("shooting")
+                # print("shooting")
                 
         player = update_player(player)
         bullet_group = update_bullets(bullet_group)       
@@ -164,6 +185,11 @@ def main():
         hit = pygame.sprite.spritecollide(player, wall_group, True)
 
         bullet_hit =  pygame.sprite.groupcollide(bullet_group, wall_group, True, True)
+
+        if gen_ammo:
+            ammo_hit = pygame.sprite.spritecollide(player, ammo_group, True)
+            if ammo_hit:
+                bullet_count += 12
 
         if bullet_hit:
             score += 1
@@ -183,8 +209,17 @@ def main():
         if is_dead:            
             screen.fill(WHITE)
             dec_dead(screen, score)
+        
+        if ammo_gen_time / ammo_gen_time_interval:
+            print('ammo generated')
+            ammo_gen_time = 0
+            ammo_gen_time_interval = random.randint(600, 1800)
+            gen_ammo = True
+            ammo = draw_ammo()
+            ammo_group.add(ammo)
 
         if not is_dead:
+            ammo_group.draw(screen)
             bullet_group.draw(screen)
             player_group.draw(screen)
             wall_group.draw(screen)
