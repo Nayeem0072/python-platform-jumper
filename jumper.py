@@ -95,12 +95,13 @@ def check_block_past(wall_group, score, block_past):
             block_past = True
     return [score, block_past]
 
-def check_ammo_past(ammo_group):
+def check_ammo_past(ammo_group, gen_ammo):
     for ammo in ammo_group:
         ammo.rect.x += ammo.vx * -1
         if ammo.rect.x < 0:            
             ammo.kill()
-    return ammo_group
+            gen_ammo = False
+    return gen_ammo
 
 
 def main():
@@ -145,7 +146,7 @@ def main():
 
     while True:        
         ammo_gen_time += 1
-        ammo_group = check_ammo_past(ammo_group)
+        gen_ammo = check_ammo_past(ammo_group, gen_ammo)
         block_check = check_block_past(wall_group, score, block_past)
         score = block_check[0]
         block_past = block_check[1]
