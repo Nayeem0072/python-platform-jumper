@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
@@ -20,6 +21,30 @@ platform_size = [600, 30]
 
 block_speed = 2.5
 jump_height = 80
+
+def load_image(name):
+    image = pygame.image.load(name)
+    return image
+
+class Player(pygame.sprite.Sprite):    
+    def __init__(self, pos, size, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = []
+        self.images.append(load_image('run-anim-sprite/sprite_run201.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run202.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run203.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run204.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run205.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run206.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run207.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run208.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run209.png'))
+                
+        self.index = 0
+        self.image = self.images[self.index]
+
+        self.rect = self.image.get_rect()
+        self.rect.center = [pos[0], pos[1] - 2]
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -68,8 +93,8 @@ def jump_player_up(player):
 
 def update_player(player):
     if player.state == 1:
-        if player.rect.y > platform_pos[1] - 45:
-            player.rect.y = platform_pos[1] - 45
+        if player.rect.y > platform_pos[1] - 45 - 10: # -10 for animated model
+            player.rect.y = platform_pos[1] - 45 - 10
             player.state = 0
         player.rect.y += 2    
     elif player.state == 2:
@@ -77,6 +102,11 @@ def update_player(player):
             player.rect.y = platform_pos[1] - 45 - jump_height
             player.state = 1
         player.rect.y += -10
+    elif player.state == 0:
+        player.index += 1
+        if player.index >= len(player.images):
+            player.index = 0
+        player.image = player.images[player.index]
     return player
 
 def update_bullets(bullet_group):
@@ -105,6 +135,7 @@ def check_ammo_past(ammo_group, gen_ammo):
 
 
 def main():
+    
     pygame.init()
     pygame.font.init()
     clock = pygame.time.Clock()
@@ -113,7 +144,7 @@ def main():
     
     screen = pygame.display.set_mode(canvas_size)
 
-    player = Sprite([100, platform_pos[1] - 30], [30, 30], GREEN)
+    player = Player([100, platform_pos[1] - 30], [30, 30], GREEN)
     player.move = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_SPACE]#, pygame.K_DOWN]
     player.vx = 5
     player.vy = 5
