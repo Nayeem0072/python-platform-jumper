@@ -33,6 +33,15 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
 
+class Ammo(pygame.sprite.Sprite):    
+    def __init__(self, pos, size, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.index = 0
+        self.image = load_image('run-anim-sprite/floatingrocks.png')
+
+        self.rect = self.image.get_rect()
+        self.rect.center = [pos[0], pos[1] - 3]
+
 class Wall(pygame.sprite.Sprite):    
     def __init__(self, pos, size, color):
         pygame.sprite.Sprite.__init__(self)
@@ -91,7 +100,7 @@ def draw_obstacle():
     return obs
 
 def draw_ammo():
-    ammo = Sprite([500, platform_pos[1]-20], [10, 10], BLUE)
+    ammo = Ammo([500, platform_pos[1]-20], [10, 10], BLUE)
     ammo.vx = block_speed
     return ammo
 
