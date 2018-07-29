@@ -169,7 +169,6 @@ def check_ammo_past(ammo_group, gen_ammo):
 
 def draw_bg(screen, backGround):
     backGround.rect.x += -2
-    print(backGround.rect.x)
     if backGround.rect.x < -740:
         backGround.rect.x = 0
     screen.blit(backGround.image, backGround.rect)
