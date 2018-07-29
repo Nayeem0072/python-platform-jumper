@@ -26,18 +26,43 @@ def load_image(name):
     image = pygame.image.load(name)
     return image
 
+class Background(pygame.sprite.Sprite):
+    def __init__(self, location):
+        pygame.sprite.Sprite.__init__(self)  #call Sprite initializer
+        self.image = load_image('run-anim-sprite/background.png')
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = location
+
+class Wall(pygame.sprite.Sprite):    
+    def __init__(self, pos, size, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.index = 0
+        self.image = load_image('run-anim-sprite/sprite_enemy0.png')
+
+        self.rect = self.image.get_rect()
+        self.rect.center = [pos[0], pos[1] + 3]
+
 class Player(pygame.sprite.Sprite):    
     def __init__(self, pos, size, color):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
         self.images.append(load_image('run-anim-sprite/sprite_run201.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run201.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run202.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run202.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run203.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run203.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run204.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run204.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run205.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run205.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run206.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run206.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run207.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run207.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run208.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run208.png'))
+        self.images.append(load_image('run-anim-sprite/sprite_run209.png'))
         self.images.append(load_image('run-anim-sprite/sprite_run209.png'))
                 
         self.index = 0
@@ -61,7 +86,7 @@ def draw_platform():
     return platform
 
 def draw_obstacle():
-    obs = Sprite([500, platform_pos[1]-30], [30, 30], RED)
+    obs = Wall([500, platform_pos[1]-30], [30, 30], RED)
     obs.vx = block_speed
     return obs
 
@@ -80,7 +105,7 @@ def dec_dead(screen, score):
 def draw_score(screen, score, bullet_count):
     myfont = pygame.font.SysFont('Verdena', 20)
     top = (480, 20)
-    scoretext = myfont.render('Score: ' + str(score), False, BLACK)
+    scoretext = myfont.render('Score: ' + str(score), False, WHITE)
     bullettext = myfont.render('Bullets: ' + str(bullet_count), False, BLUE)
     screen.blit(scoretext, top)
     screen.blit(bullettext, [top[0], top[1] + 20])
@@ -133,14 +158,14 @@ def check_ammo_past(ammo_group, gen_ammo):
             gen_ammo = False
     return gen_ammo
 
-
-def main():
-    
+def main():    
     pygame.init()
     pygame.font.init()
     clock = pygame.time.Clock()
     fps = 60
     bg = WHITE
+
+    backGround = Background([0,0])
     
     screen = pygame.display.set_mode(canvas_size)
 
@@ -203,7 +228,7 @@ def main():
 
         if key[player.move[3]]:
             if bullet_count > 0:
-                bullet = Sprite([player.rect.x + 30, player.rect.y + 15], [5, 5], BLACK)
+                bullet = Sprite([player.rect.x + 30, player.rect.y + 15], [5, 5], RED)
                 bullet_group.add(bullet)
                 bullet_count += -1
                 # print("shooting")
@@ -211,7 +236,8 @@ def main():
         player = update_player(player)
         bullet_group = update_bullets(bullet_group)       
 
-        screen.fill(bg)
+        screen.fill(BLACK)
+        screen.blit(backGround.image, backGround.rect)
         draw_score(screen, score, bullet_count)
         
         hit = pygame.sprite.spritecollide(player, wall_group, True)
