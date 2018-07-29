@@ -162,8 +162,7 @@ def main():
     pygame.init()
     pygame.font.init()
     clock = pygame.time.Clock()
-    fps = 60
-    bg = WHITE
+    fps = 60  
 
     backGround = Background([0,0])
     
