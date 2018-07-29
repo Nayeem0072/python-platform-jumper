@@ -2,7 +2,6 @@ import pygame
 import sys
 import random
 
-
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
@@ -16,7 +15,8 @@ AQUA = (0, 255, 255)
 canvas_size = [600, 600]
 gen_canvas_size = [200, 200]
 color_list = [BLACK, RED, MAROON, OLIVE, LIME, AQUA]
-platform_pos = [300, 350]
+# platform_pos = [300, 350]
+platform_pos = [300, 450]
 platform_size = [600, 30]
 
 block_speed = 2.5
@@ -28,7 +28,7 @@ def load_image(name):
 
 class Background(pygame.sprite.Sprite):
     def __init__(self, location):
-        pygame.sprite.Sprite.__init__(self)  #call Sprite initializer
+        pygame.sprite.Sprite.__init__(self)  
         self.image = load_image('run-anim-sprite/background.png')
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
@@ -40,7 +40,7 @@ class Ammo(pygame.sprite.Sprite):
         self.image = load_image('run-anim-sprite/floatingrocks.png')
 
         self.rect = self.image.get_rect()
-        self.rect.center = [pos[0], pos[1] - 3]
+        self.rect.center = [pos[0], pos[1] - 5]
 
 class Wall(pygame.sprite.Sprite):    
     def __init__(self, pos, size, color):
@@ -115,7 +115,7 @@ def draw_score(screen, score, bullet_count):
     myfont = pygame.font.SysFont('Verdena', 20)
     top = (480, 20)
     scoretext = myfont.render('Score: ' + str(score), False, WHITE)
-    bullettext = myfont.render('Bullets: ' + str(bullet_count), False, BLUE)
+    bullettext = myfont.render('Bullets: ' + str(bullet_count), False, AQUA)
     screen.blit(scoretext, top)
     screen.blit(bullettext, [top[0], top[1] + 20])
 
@@ -166,6 +166,13 @@ def check_ammo_past(ammo_group, gen_ammo):
             ammo.kill()
             gen_ammo = False
     return gen_ammo
+
+def draw_bg(screen, backGround):
+    backGround.rect.x += -2
+    print(backGround.rect.x)
+    if backGround.rect.x < -740:
+        backGround.rect.x = 0
+    screen.blit(backGround.image, backGround.rect)
 
 def main():    
     pygame.init()
@@ -245,7 +252,9 @@ def main():
         bullet_group = update_bullets(bullet_group)       
 
         screen.fill(BLACK)
-        screen.blit(backGround.image, backGround.rect)
+        
+        draw_bg(screen, backGround)
+        
         draw_score(screen, score, bullet_count)
         
         hit = pygame.sprite.spritecollide(player, wall_group, True)
