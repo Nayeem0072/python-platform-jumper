@@ -214,6 +214,16 @@ def main():
     gen_ammo = False
     ammo_gen_time_interval = 600
 
+    bg_width = backGround.image.get_size()[0]
+    print(bg_width)
+    
+    bg_y, bg_y1 = 0, 0
+
+    bg_x = 0
+    bg_x1 =  bg_width 
+
+
+
     while True:        
         ammo_gen_time += 1
         gen_ammo = check_ammo_past(ammo_group, gen_ammo)
@@ -252,7 +262,19 @@ def main():
 
         screen.fill(BLACK)
         
-        draw_bg(screen, backGround)
+        # new code to implement seamless bg
+        bg_x1 -= 2
+        bg_x -= 2
+
+        screen.blit(backGround.image, [bg_x, bg_y])
+        screen.blit(backGround.image, [bg_x1, bg_y1])
+
+        if bg_x < -bg_width:
+            bg_x = bg_x1 + bg_width 
+        if bg_x1 < -bg_width:
+            bg_x1 = bg_x + bg_width 
+
+        # draw_bg(screen, backGround)
         
         draw_score(screen, score, bullet_count)
         
